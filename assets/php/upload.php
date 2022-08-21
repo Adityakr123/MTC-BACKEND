@@ -19,17 +19,33 @@ $a=0;
 if(isset($_POST['btn'])){
 
 $name= $_FILES['myfile']['name'];
-
+$Certificate_id=$_POST['certificate_id'];
+$holder_name=$_POST['holdername'];
 $type = $_FILES['myfile']['type'];
-session_start();
-$Username=$_SESSION["id"];
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "MTC_CERTIFICATE";
 
 $data = file_get_contents($_FILES['myfile']['tmp_name']);
-$conn = mysqli_connect("localhost", "root", "", "module");
+$conn = mysqli_connect("localhost", "root", "", "MTC_CERTIFICATE");
+$con = new mysqli($servername, $username, $password, $dbname);
+// Check connection
+ if ($con->connect_error) {
+     die("Connection failed: " . $conn->connect_error);
+     
+ }
+ try{
+    $conn->query("CREATE TABLE ID(id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,Holder_Name varchar(255),certificate_id varchar(255),name varchar(255),mime varchar(255),data longblob)AUTO_INCREMENT=1000000");
+    }
+ finally{
+ 
+ }
 $imgData =addslashes(file_get_contents($_FILES['myfile']['tmp_name']));
 // $imageProperties = getimageSize($_FILES['myfile']['tmp_name']);
 // $name= $_FILES['myfile']['name'];
-$sql = "INSERT INTO $Username(name,mime,data)VALUES('$name','$type','$imgData')";
+
+$sql = "INSERT INTO ID(certificate_id,Holder_Name,name,mime,data)VALUES('$Certificate_id','$holder_name','$name','$type','$imgData')";
 $current_id = mysqli_query($conn, $sql) or die("<b>Error:</b> Problem on Image Insert<br/>" . mysqli_error($conn));
 if($current_id){
 $a=1;
@@ -74,14 +90,21 @@ $a=1;
             <br>
             <br>
                     
-            <form method="post" enctype="multipart/form-data" > 
+            <form method="post" action="upload.php" enctype="multipart/form-data" > 
+            <input type="text" name="certificate_id" placeholder="Enter certificate id " class="certificate">
+            <div>
+            <input type="text" name="holdername" placeholder="Enter certificate holder name" class="certificate">
+            <div>
                 <input type="file" class="input topinput" style="self-align:center" name="myfile"/>
                 <button name="btn" class="submit" >Upload</button>
                 
 
 </form>
 <div style="padding-bottom:20px;">
-<a href="seeupload.php"><button class="submit" >SEE UPLOADS</button></a>
+<form action="../../seeupload.html">
+<button class="submit" >SEE UPLOADS</button>
+</form>
+
 </div>
 <?php
     if($a==1){
